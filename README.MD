@@ -1,13 +1,11 @@
-## Hosted Project
+[E-Commerce API Heroku URL](https://my-first-big-api.herokuapp.com/)
 
-[E-Commerce API Heroku URL](https://e-commerce-api-10.herokuapp.com/)
+#### Project Description
+First of all, this is a ExpressJS project from a Node course that I'm taking, but it contains a lot of parts that I consider worthwhile to learn. 
+The e-commerce api provides data about retail products that the front-end can consume and display accordingly. Moreover, this api also provides authentication so that only authenticated users can access a certain route. I use MongoDB as the database and Mongoose to manage the schema. Since this is a fairly big project, there are a lot of components working together and understanding all of them is quite challenging. Documentaion is also available so users can learn what each request does and what its body looks like.
+In the following sections, I will explain the steps I took when I was working on the project.
 
-#### Setup Basic Express Server
-
-- [] import express and assign to variable
-- [] setup start port variable (5000) and start function
-
-#### Connect To DB
+#### Technologies used 
 
 - [] get connection string
 - [] setup .env with MONGO_URL variable and assign the value
