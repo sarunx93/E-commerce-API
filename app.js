@@ -41,7 +41,7 @@ app.use(mongoSanitize());
 
 //packages
 const morgan = require("morgan");
-app.use(morgan("tiny"));
+
 app.use(express.json()); //allows us the access to JSON data in req.body
 app.use(cookieParser(process.env.JWT_SECRET));
 
@@ -53,11 +53,6 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/orders", orderRouter);
-
-app.get("/api/v1", (req, res) => {
-  console.log(req.signedCookies);
-  res.send("e-commerce API");
-});
 
 app.use(notFound);
 app.use(errorHandler);
