@@ -16,13 +16,44 @@ First and foremost, we need to import and initailize an Express instance and, ac
 const express = require("express");
 const app = express();
 ```
-After that, we use app.use method to bind each path to a route
+After that, we use app.use method to bind each path to a route.
 ```
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/orders", orderRouter);
+```
+And each route is binded to a controller which will be triggered when a request is sent to the server. Here is the code snippet of the user route that is responsible for displaying and updating a user's profile.
+
+```
+const express = require("express");
+const router = express.Router();
+const {
+  authenticateUser,
+  authorizePermissions,
+} = require("../middleware/authentication");
+const {
+  getAllUsers,
+  getSingleUser,
+  showCurrentUser,
+  updateUser,
+  updateUserPassword,
+} = require("../controllers/userController");
+router
+  .route("/")
+  .get(authenticateUser, authorizePermissions("admin", "owner"), getAllUsers); //only admin and owner have access
+router.route("/showMe").get(authenticateUser, showCurrentUser);
+router.route("/updateUser").patch(authenticateUser, updateUser);
+router.route("/updateUserPassword").patch(authenticateUser, updateUserPassword);
+router.route("/:id").get(authenticateUser, getSingleUser);
+
+module.exports = router;
+```
+As a sidenote, two authentication middlewares is incoprated here to validate if the user sending requrests is authenticated.
+And this is how the user controller looks like.
+```
+
 ```
 
 
