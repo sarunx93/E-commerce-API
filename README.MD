@@ -178,11 +178,41 @@ In this schema, each user has 4 properties: name, email, password and role. All 
 Furthermore, I also created a custom method to compare passwords which will be used in password updating in the user controller. Basically, we just use a compare built-in method in Bcrypt and return a boolean value.
 
 
-#### jwt and cookies
-What is JWT and why?
-What are cookies and why
+#### JWT and cookies
+JSON web token or JWT is a series of string that is used for user authentication. Basically, users who log in or register will receive a token upon transactions and the backend will validate if a user is authenticated using this token. If a user is authenticated, he or she will receive a token and be allowed to access the information inside.
 
+In this project, jwt is attached to cookies which in turn attaced to the response, so that the server can validate if the request sent comes with a valid token.
+This how it looks like in the code.
+```
+const jwt = require("jsonwebtoken");
+const createJWT = ({ payload }) => {
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_LIFETIME,
+  });
+  return token;
+};
 
+const isTokenValid = ({ token }) => jwt.verify(token, process.env.JWT_SECRET);
+
+const attachCookiesToResponse = ({ res, user }) => {
+  const token = createJWT({ payload: user });
+  const twoDays = 1000 * 60 * 60 * 240;
+  //saving jwt in cookies
+  res.cookie("token", token, {
+    httpOnly: true,
+    expires: new Date(Date.now() + twoDays),
+    secure: process.env.NODE_ENV === "production",
+    signed: true,
+  });
+};
+
+module.exports = {
+  createJWT,
+  isTokenValid,
+  attachCookiesToResponse,
+};
+```
+For a use-case, please see the code snippet below. You will see that a cookie will be attached once the authentications is done and then the response will be sent with a cookie, so that the browser can recognize this is a valid request.
 
 #### User Model
 
