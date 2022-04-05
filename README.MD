@@ -178,9 +178,11 @@ In this schema, each user has 4 properties: name, email, password and role. All 
 Furthermore, I also created a custom method to compare passwords which will be used in password updating in the user controller. Basically, we just use a compare built-in method in Bcrypt and return a boolean value.
 
 
-#### Morgan Pacakge
+#### jwt and cookies
+What is JWT and why?
+What are cookies and why
 
-- [Morgan Package](https://www.npmjs.com/package/morgan)
+
 
 #### User Model
 
