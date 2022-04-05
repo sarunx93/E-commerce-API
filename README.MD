@@ -6,20 +6,12 @@ The e-commerce api provides data about retail products that the front-end can co
 In the following sections, I will explain the steps I took when I was working on the project.
 
 #### Technologies used 
+- Langauges : JavaScript and HTML
+- Packages : Express, Mongoose, jsonwebtoken and more (please see the full list in package.json)
+- Deployment : Heroku
 
-- [] get connection string
-- [] setup .env with MONGO_URL variable and assign the value
-- [] import 'dotenv' and setup package
-- [] import connect() and invoke in the starter
-- [] restart the server
-- [] mongoose V6 info
+#### Hot the app works
 
-#### Basic Routes and Middleware
-
-- [] setup / GET Route
-- [] setup express.json() middleware
-- [] setup 404 and errorHandler middleware
-- [] import 'exress-async-errors' package
 
 #### 404 vs ErrorHandler Middleware
 
