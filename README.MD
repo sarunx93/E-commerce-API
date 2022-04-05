@@ -1,27 +1,125 @@
-## Hosted Project
+[E-Commerce API Heroku URL](https://my-first-big-api.herokuapp.com/)
 
-[E-Commerce API Heroku URL](https://e-commerce-api-10.herokuapp.com/)
+#### Project Description
+First of all, this is a ExpressJS project from a Node course that I'm taking, but it contains a lot of parts that I consider worthwhile to learn. 
+The e-commerce api provides data about retail products that the front-end can consume and display accordingly. Moreover, this api also provides authentication so that only authenticated users can access a certain route. I use MongoDB as the database and Mongoose to manage the schema. Since this is a fairly big project, there are a lot of components working together and understanding all of them is quite challenging. Documentaion is also available so users can learn what each request does and what its body looks like.
+In the following sections, I will explain the steps I took when I was working on the project.
 
-#### Setup Basic Express Server
+#### Technologies used 
+- Langauges : JavaScript and HTML
+- Packages : Express, Mongoose, jsonwebtoken and more (please see the full list in package.json)
+- Deployment : Heroku
 
-- [] import express and assign to variable
-- [] setup start port variable (5000) and start function
+#### Routes and Controllers
+First and foremost, we need to import and initailize an Express instance and, according to the convention, give it a name of 'app'.
+```
+const express = require("express");
+const app = express();
+```
+After that, we use app.use method to bind each path to a route.
+```
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/products", productRouter);
+app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/orders", orderRouter);
+```
+And each route is binded to a controller which will be triggered when a request is sent to the server. Here is the code snippet of the user route that is responsible for displaying and updating a user's profile.
 
-#### Connect To DB
+```
+const express = require("express");
+const router = express.Router();
+const {
+  authenticateUser,
+  authorizePermissions,
+} = require("../middleware/authentication");
+const {
+  getAllUsers,
+  getSingleUser,
+  showCurrentUser,
+  updateUser,
+  updateUserPassword,
+} = require("../controllers/userController");
+router
+  .route("/")
+  .get(authenticateUser, authorizePermissions("admin", "owner"), getAllUsers); //only admin and owner have access
+router.route("/showMe").get(authenticateUser, showCurrentUser);
+router.route("/updateUser").patch(authenticateUser, updateUser);
+router.route("/updateUserPassword").patch(authenticateUser, updateUserPassword);
+router.route("/:id").get(authenticateUser, getSingleUser);
 
-- [] get connection string
-- [] setup .env with MONGO_URL variable and assign the value
-- [] import 'dotenv' and setup package
-- [] import connect() and invoke in the starter
-- [] restart the server
-- [] mongoose V6 info
+module.exports = router;
+```
+As a sidenote, two authentication middlewares is incoprated here to validate if the user sending requrests is authenticated.
+And this is how the user controller looks like.
+```
+const User = require("../models/User");
+const { StatusCodes } = require("http-status-codes");
+const CustomError = require("../errors");
+const {
+  createTokenUser,
+  attachCookiesToResponse,
+  checkPermissions,
+} = require("../utils");
 
-#### Basic Routes and Middleware
+const getAllUsers = async (req, res) => {
+  const users = await User.find({ role: "user" }).select("-password");
+  res.status(StatusCodes.OK).json({ users });
+};
+const getSingleUser = async (req, res) => {
+  const user = await User.findOne({ _id: req.params.id }).select("-password");
+  if (!user) {
+    throw new CustomError.NotFoundError(`No user with id ${req.params.id}`);
+  }
+  checkPermissions(req.user, user._id);
+  res.status(StatusCodes.OK).json({ user });
+};
 
-- [] setup / GET Route
-- [] setup express.json() middleware
-- [] setup 404 and errorHandler middleware
-- [] import 'exress-async-errors' package
+const showCurrentUser = async (req, res) => {
+  res.status(StatusCodes.OK).json({ user: req.user });
+};
+
+//update user using user.save
+const updateUser = async (req, res) => {
+  const { email, name } = req.body;
+  if (!email || !name) {
+    throw new CustomError.BadRequestError("Please provide all values");
+  }
+  const user = await User.findOne({ _id: req.user.userId });
+  user.email = email;
+  user.name = name;
+  await user.save(); //Warning : the password will be hashed one more time.
+  const tokenUser = createTokenUser(user);
+  attachCookiesToResponse({ res, user: tokenUser });
+  res.status(StatusCodes.OK).json({ user: tokenUser });
+};
+
+const updateUserPassword = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  if (!oldPassword || !newPassword) {
+    throw new CustomError.BadRequestError("Please provide both values");
+  }
+  const user = await User.findOne({ _id: req.user.userId });
+  const isPasswordCorrect = await user.comparePassword(oldPassword);
+  if (!isPasswordCorrect) {
+    throw new CustomError.UnauthenticatedError("Invalid Credentials");
+  }
+  user.password = newPassword;
+  await user.save();
+  res.status(StatusCodes.OK).json({ msg: "Success! Password Updated" });
+};
+
+module.exports = {
+  getAllUsers,
+  getSingleUser,
+  showCurrentUser,
+  updateUser,
+  updateUserPassword,
+};
+```
+Here, the controller will implement CRUD operations (create, read, update and delete) via the User model which is an instance of Mongoose that interacts with the database.(imported in line 1).
+If you want to send a request and see the result, please do so in Postman. [click here to download](https://www.postman.com/)
+
 
 #### 404 vs ErrorHandler Middleware
 
