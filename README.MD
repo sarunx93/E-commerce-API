@@ -121,6 +121,8 @@ module.exports = {
 Here, the controller will implement CRUD operations (create, read, update and delete) via the User model which is an instance of Mongoose that interacts with the database.(imported in line 1).
 If you want to send a request and see the result, please do so in Postman. [click here to download](https://www.postman.com/). This is how the respond looks like when sending a GET request in Postman.
 <img src='https://github.com/sarunx93/E-commerce-API/blob/master/images/get_all_users.png'>
+And this is how you can send a POST request to register a new user
+
 
 
 #### Models (Mongoose Schemas)
