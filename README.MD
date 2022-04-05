@@ -10,7 +10,7 @@ In the following sections, I will explain the steps I took when I was working on
 - Packages : Express, Mongoose, jsonwebtoken and more (please see the full list in package.json)
 - Deployment : Heroku
 
-#### Hot the app works
+#### Routes and Controllers
 First and foremost, we need to import and initailize an Express instance and, according to the convention, give it a name of 'app'.
 ```
 const express = require("express");
@@ -117,7 +117,8 @@ module.exports = {
   updateUserPassword,
 };
 ```
-Here, the controller will implement CRUD operations (create, read, update and delete) via the User model which is an instance of Mongoose that interacts with the database.(imported in line 1)
+Here, the controller will implement CRUD operations (create, read, update and delete) via the User model which is an instance of Mongoose that interacts with the database.(imported in line 1).
+If you want to send a request and see the result, please do so in Postman. [click here to download](https://www.postman.com/)
 
 
 #### 404 vs ErrorHandler Middleware
