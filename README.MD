@@ -11,6 +11,7 @@ In the following sections, I will explain the steps I took when I was working on
 - Deployment : Heroku
 
 #### Routes and Controllers
+In this section, I will explain how routes and controllers are realated. Since I don't want this README to be too long, I will only give an example of the user route and user controller. The other routes and controllers apply the same method to bind them together, they are only slightly different.
 First and foremost, we need to import and initailize an Express instance and, according to the convention, give it a name of 'app'.
 ```
 const express = require("express");
@@ -118,10 +119,64 @@ module.exports = {
 };
 ```
 Here, the controller will implement CRUD operations (create, read, update and delete) via the User model which is an instance of Mongoose that interacts with the database.(imported in line 1).
-If you want to send a request and see the result, please do so in Postman. [click here to download](https://www.postman.com/)
+If you want to send a request and see the result, please do so in Postman. [click here to download](https://www.postman.com/). This is how the respond looks like when sending a GET request in Postman.
+<img src='https://github.com/sarunx93/E-commerce-API/blob/master/images/get_all_users.png'>
 
 
-#### 404 vs ErrorHandler Middleware
+#### Models (Mongoose Schemas)
+This is where we determine how our schemas is going to look like in the database, whether how many properties will we have or what types are they, this will be done here.
+```
+const mongoose = require("mongoose");
+const validator = require("validator");
+//password encryption
+const bcrypt = require("bcryptjs");
+
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Name must be provided"],
+    minlength: 3,
+    maxlength: 50,
+  },
+  email: {
+    type: String,
+    unique: true,
+    required: [true, "Email must be provided."],
+    //validate emails using external package.
+    validate: {
+      validator: validator.isEmail,
+      message: "Please provide a valid email",
+    },
+  },
+  password: {
+    type: String,
+    required: [true, "Please provide a password"],
+    minlength: 6,
+  },
+  role: {
+    type: String,
+    enum: ["admin", "user"],
+    default: "user",
+  },
+});
+
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  const isMatch = await bcrypt.compare(candidatePassword, this.password);
+  return isMatch;
+};
+
+module.exports = mongoose.model("Users", userSchema);
+```
+In this schema, each user has 4 properties: name, email, password and role. All of them can't be empty values but only role has the default value of user. There are 2 extra packages invloved in this model set up: bcrypt and validator. Bcrypt is capable of encrypting passwords before sending it to database which is crucial since we don't want any password to be shown in plain text whereas Validator helps with email validation so that we don't need to write the email validation logic ourselves.
+Furthermore, I also created a custom method to compare passwords which will be used in password updating in the user controller. Basically, we just use a compare built-in method in Bcrypt and return a boolean value.
+
 
 #### Morgan Pacakge
 
