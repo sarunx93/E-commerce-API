@@ -11,6 +11,19 @@ In the following sections, I will explain the steps I took when I was working on
 - Deployment : Heroku
 
 #### Hot the app works
+First and foremost, we need to import and initailize an Express instance and, according to the convention, give it a name of 'app'.
+```
+const express = require("express");
+const app = express();
+```
+After that, we use app.use method to bind each path to a route
+```
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/products", productRouter);
+app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/orders", orderRouter);
+```
 
 
 #### 404 vs ErrorHandler Middleware
